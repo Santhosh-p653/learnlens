@@ -8,14 +8,17 @@ import spaces
 
 import gradio_client.utils as _gc_utils
 
-_original_get_type = _gc_utils.get_type
+_original_inner = _gc_utils._json_schema_to_python_type
 
-def _patched_get_type(schema):
+def _safe_inner(schema, defs=None):
     if isinstance(schema, bool):
         return "Any"
-    return _original_get_type(schema)
+    try:
+        return _original_inner(schema, defs)
+    except Exception:
+        return "Any"
 
-_gc_utils.get_type = _patched_get_type
+_gc_utils._json_schema_to_python_type = _safe_inner
 
 # ---- Config ----
 SAMBANOVA_API_KEY = os.environ.get("SAMBANOVA_API_KEY")
@@ -140,4 +143,4 @@ with gr.Blocks(title="LearnLens") as demo:
         outputs=[explanation_output, audio_output],
     )
 
-demo.launch()
+demo.launch(share=True)
