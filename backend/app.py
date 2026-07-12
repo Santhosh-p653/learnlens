@@ -129,4 +129,4 @@ with gr.Blocks(title="LearnLens") as demo:
         outputs=[explanation_output, audio_output],
     )
 
-demo.launch()
+demo.launch(show_api=False)
