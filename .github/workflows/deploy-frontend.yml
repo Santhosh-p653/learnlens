@@ -10,9 +10,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: frontend
     steps:
       - uses: actions/checkout@v4
 
@@ -26,8 +23,6 @@ jobs:
       - name: Pull Vercel environment
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: vercel pull --yes --environment=production --token=$VERCEL_TOKEN
 
       - name: Set env vars on Vercel
@@ -35,7 +30,7 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           HF_USERNAME: ${{ secrets.HF_USERNAME }}
         run: |
-          echo "your-username/learnlens" | sed "s/your-username/${HF_USERNAME}/" > /tmp/space_url.txt
+          echo "${HF_USERNAME}/learnlens" > /tmp/space_url.txt
           vercel env rm HF_SPACE_URL production --yes --token=$VERCEL_TOKEN || true
           cat /tmp/space_url.txt | vercel env add HF_SPACE_URL production --token=$VERCEL_TOKEN
 
