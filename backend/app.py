@@ -4,6 +4,7 @@ import os
 import asyncio
 import tempfile
 import edge_tts
+import spaces
 
 # ---- Config ----
 SAMBANOVA_API_KEY = os.environ.get("SAMBANOVA_API_KEY")
@@ -82,6 +83,7 @@ def text_to_speech(text: str, language: str) -> str:
     return out_path
 
 
+@spaces.GPU(duration=30)
 def process(image, voice_question, grade_level, language):
     if image is None:
         return "Please upload a photo of the textbook page or diagram.", None
