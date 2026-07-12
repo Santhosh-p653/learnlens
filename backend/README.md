@@ -4,7 +4,7 @@ emoji: 📚
 colorFrom: blue
 colorTo: purple
 sdk: gradio
-sdk_version: 4.44.0
+sdk_version: 4.44.1
 app_file: app.py
 pinned: false
 ---
@@ -19,4 +19,4 @@ Gradio Space powering LearnLens — photo-to-explanation learning assistant.
 
 ## API endpoint
 Once deployed, callable via gradio_client at:
-https://<your-username>-learnlens.hf.space
+https://<santhosh11042007>-learnlens.hf.space
