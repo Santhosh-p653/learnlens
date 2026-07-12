@@ -6,10 +6,21 @@ import tempfile
 import edge_tts
 import spaces
 
+import gradio_client.utils as _gc_utils
+
+_original_get_type = _gc_utils.get_type
+
+def _patched_get_type(schema):
+    if isinstance(schema, bool):
+        return "Any"
+    return _original_get_type(schema)
+
+_gc_utils.get_type = _patched_get_type
+
 # ---- Config ----
 SAMBANOVA_API_KEY = os.environ.get("SAMBANOVA_API_KEY")
 SAMBANOVA_URL = "https://api.sambanova.ai/v1/chat/completions"
-SAMBANOVA_MODEL = "Meta-Llama-3.1-70B-Instruct"  # swap to your preferred SambaNova model
+SAMBANOVA_MODEL = "Meta-Llama-3.1-70B-Instruct"
 
 HF_TOKEN = os.environ.get("HF_TOKEN")
 CAPTION_MODEL_URL = "https://api-inference.huggingface.co/models/Salesforce/blip2-opt-2.7b"
@@ -129,4 +140,4 @@ with gr.Blocks(title="LearnLens") as demo:
         outputs=[explanation_output, audio_output],
     )
 
-demo.launch(show_api=False)
+demo.launch()
