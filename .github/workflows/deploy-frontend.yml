@@ -28,11 +28,10 @@ jobs:
       - name: Set env vars on Vercel
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          HF_USERNAME: ${{ secrets.HF_USERNAME }}
+          RENDER_BACKEND_URL: ${{ secrets.RENDER_BACKEND_URL }}
         run: |
-          echo "${HF_USERNAME}/learnlens" > /tmp/space_url.txt
-          vercel env rm HF_SPACE_URL production --yes --token=$VERCEL_TOKEN || true
-          cat /tmp/space_url.txt | vercel env add HF_SPACE_URL production --token=$VERCEL_TOKEN
+          vercel env rm BACKEND_URL production --yes --token=$VERCEL_TOKEN || true
+          echo "${RENDER_BACKEND_URL}" | vercel env add BACKEND_URL production --token=$VERCEL_TOKEN
 
       - name: Build
         env:
