@@ -5,6 +5,7 @@ import asyncio
 import tempfile
 import edge_tts
 import spaces
+from huggingface_hub import InferenceClient
 
 import gradio_client.utils as _gc_utils
 
@@ -33,8 +34,8 @@ SAMBANOVA_URL = "https://api.sambanova.ai/v1/chat/completions"
 SAMBANOVA_MODEL = "Meta-Llama-3.1-70B-Instruct"
 
 HF_TOKEN = os.environ.get("HF_TOKEN")
-CAPTION_MODEL_URL = "https://api-inference.huggingface.co/models/Salesforce/blip2-opt-2.7b"
-WHISPER_MODEL_URL = "https://api-inference.huggingface.co/models/openai/whisper-large-v3"
+
+hf_client = InferenceClient(token=HF_TOKEN)
 
 TTS_VOICE_MAP = {
     "English": "en-US-AriaNeural",
@@ -46,23 +47,19 @@ TTS_VOICE_MAP = {
 
 
 def caption_image(image_bytes: bytes) -> str:
-    headers = {"Authorization": f"Bearer {HF_TOKEN}"}
-    resp = requests.post(CAPTION_MODEL_URL, headers=headers, data=image_bytes, timeout=60)
-    resp.raise_for_status()
-    result = resp.json()
-    if isinstance(result, list) and "generated_text" in result[0]:
-        return result[0]["generated_text"]
+    result = hf_client.image_to_text(image_bytes, model="Salesforce/blip2-opt-2.7b")
+    if isinstance(result, dict) and "generated_text" in result:
+        return result["generated_text"]
     return str(result)
 
 
 def transcribe_audio(audio_path: str) -> str:
-    headers = {"Authorization": f"Bearer {HF_TOKEN}"}
     with open(audio_path, "rb") as f:
         data = f.read()
-    resp = requests.post(WHISPER_MODEL_URL, headers=headers, data=data, timeout=60)
-    resp.raise_for_status()
-    result = resp.json()
-    return result.get("text", "")
+    result = hf_client.automatic_speech_recognition(data, model="openai/whisper-large-v3")
+    if isinstance(result, dict) and "text" in result:
+        return result["text"]
+    return str(result)
 
 
 def explain_with_sambanova(caption: str, question: str, grade_level: str, language: str) -> str:
