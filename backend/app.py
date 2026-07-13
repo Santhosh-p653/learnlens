@@ -20,6 +20,13 @@ def _safe_inner(schema, defs=None):
 
 _gc_utils._json_schema_to_python_type = _safe_inner
 
+
+@spaces.GPU(duration=5)
+def _zerogpu_placeholder():
+    """Dummy function so Spaces detects a GPU function at startup. Never actually called."""
+    return None
+
+
 # ---- Config ----
 SAMBANOVA_API_KEY = os.environ.get("SAMBANOVA_API_KEY")
 SAMBANOVA_URL = "https://api.sambanova.ai/v1/chat/completions"
@@ -97,7 +104,6 @@ def text_to_speech(text: str, language: str) -> str:
     return out_path
 
 
-@spaces.GPU(duration=30)
 def process(image, voice_question, grade_level, language):
     if image is None:
         return "Please upload a photo of the textbook page or diagram.", None
@@ -143,4 +149,4 @@ with gr.Blocks(title="LearnLens") as demo:
         outputs=[explanation_output, audio_output],
     )
 
-demo.launch(share=True)
+demo.launch()
