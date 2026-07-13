@@ -1,45 +1,18 @@
----
-title: LearnLens
-emoji: 📚
-colorFrom: blue
-colorTo: purple
-sdk: gradio
-sdk_version: 4.44.1
-app_file: app.py
-pinned: false
----
+# LearnLens Backend (Flask, deployed on Render)
 
-# LearnLens
+## Endpoints
+- GET /health — health check
+- POST /process — multipart form: image (file), voice (file, optional), gradeLevel, language
+  Returns: { explanation: string, audio_base64: string }
 
-LearnLens is an AI-powered learning accessibility tool that helps students understand textbook content more easily.
+## Environment variables (set in Render dashboard)
+- SAMBANOVA_API_KEY
+- HF_TOKEN
 
-## Features
-
-- 📷 Upload a textbook page or diagram
-- 🎙️ Ask questions using your voice
-- 🧠 AI-generated simplified explanations
-- 🌍 Multiple language support
-- 🔊 Text-to-speech output
-
-## Required Secrets
-
-Add the following secrets in your Hugging Face Space:
-
-- `SAMBANOVA_API_KEY`
-- `HF_TOKEN`
-
-## Deployment
-
-This project is designed for **Hugging Face Spaces (Gradio + ZeroGPU)**.
-
-The app entry point is:
-
-```
-app.py
-```
-
-After deployment, your Space will be available at:
-
-```
-https://<your-username>-learnlens.hf.space
-```
+## Deploy on Render
+1. New → Web Service → connect this repo
+2. Root directory: backend
+3. Build command: pip install -r requirements.txt
+4. Start command: gunicorn app:app --bind 0.0.0.0:$PORT --timeout 120
+5. Instance type: Free
+6. Add env vars: SAMBANOVA_API_KEY, HF_TOKEN
